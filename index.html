@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Torneo Intramuros ITVER</title>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/init_db.js"></script>
+    <script src="static/js/script.js"></script>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <a class="flex-horizontal" href="index.html">
+            <img class="logo" src="static/media/logo.png" alt="logo">
+            <h1 class="titulo"><span>Torneo</span> Manager</h1>
+        </a>
+
+        <ul class="navbar flex-horizontal">
+            <a href="#">
+                <li class="item">Sobre Nosotros</li>
+            </a>
+            <a href="#">
+                <li class="item">Contáctanos</li>
+            </a>
+        </ul>
+    </header>
+
+    <main>
+        <!-- Main Top -->
+        <div class="flex-horizontal main-top">
+            <h2>Registro de Equipos</h2>
+            <button class="btn-secondary">Sincronizar con MongoDB Atlas</button>
+        </div>
+        <div class="flex-horizontal main-top">
+            <form class="flex-horizontal">
+                <label for="equipo-nombre">Nombre: </label>
+                <input class="equipo-nombre" type="text" id="equipo-nombre" placeholder="Nombre de tu Equipo">
+                <button style="background-color: #10b981;">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+            </form>
+            <button id="btn-nuevo-jugador" style="background-color: #10b981;">
+                <i class="fa-solid fa-circle-plus mr"></i> Jugador
+            </button>
+        </div>
+
+        <!-- Main Table -->
+        <div class="table-container">
+            <table class="table-jugadores" border=0>
+                <tr class="table-header">
+                    <th>No. Control</th>
+                    <th>Nombre Completo</th>
+                    <th>Posici&oacute;n</th>
+                    <th>Dorsal</th>
+                    <th>Acciones</th>
+                </tr>
+                <tbody id="jugadores">
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal Nuevo Jugador -->
+    <div class="modal-overlay" id="modal-nuevo-jugador">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Nuevo Jugador</h3>
+                <button class="close-btn" id="cerrar-modal">&times;</button>
+            </div>
+            <form id="form-nuevo-jugador">
+                <div class="form-group">
+                    <label for="jugador-control">No. Control</label>
+                    <input type="text" id="jugador-control" maxlength="8" placeholder="Ej. 22020795" required>
+                </div>
+                <div class="form-group">
+                    <label for="jugador-nombre">Nombre Completo</label>
+                    <input type="text" id="jugador-nombre" maxlength="50" placeholder="Nombre del jugador" required>
+                </div>
+                <div class="form-group">
+                    <label for="jugador-posicion">Posición</label>
+                    <select name="cars" id="jugador-posicion">
+                        <option value="Defensa">Defensa</option>
+                        <option value="Central">Central</option>
+                        <option value="Medio">Medio</option>
+                        <option value="Delantero">Delantero</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="jugador-dorsal">Dorsal</label>
+                    <input type="number" id="jugador-dorsal" min="0" max="99" placeholder="Ej. 10" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" id="btn-cancelar">Cancelar</button>
+                    <button type="submit" class="btn" style="background-color: #10b981;">Guardar Jugador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2026 Torneo Manager. Todos los derechos reservados.</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+footer {
+    width: 100%;
+    padding: 1.8rem 0;
+    text-align: center;
+
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    background-color: transparent;
+}
+
+footer p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
