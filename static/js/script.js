@@ -10,12 +10,17 @@ function agregar_jugador() {
         // 2. Obtenemos el almacén de objetos para operar con él
         let jugadores = transaction.objectStore("jugadores");
 
+        if (sessionStorage.id_equipo) {
+            id_equipo = sessionStorage.id_equipo;
+        }
+
         // 3. Creamos el objeto jugador
         let jugador = {
             id: document.getElementById("jugador-control").value,
             nombre_completo: document.getElementById("jugador-nombre").value,
             posicion: document.getElementById("jugador-posicion").value,
             dorsal: document.getElementById("jugador-dorsal").value,
+            equipo: id_equipo,
             created: new Date()
         };
 
