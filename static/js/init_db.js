@@ -9,6 +9,11 @@ openRequest.onupgradeneeded = function () {
         db.createObjectStore('jugadores', { keyPath: 'id' });
         console.log("Base de datos y almacén 'jugadores' creados correctamente");
     }
+
+    if (!db.objectStoreNames.contains('equipos')) {
+        db.createObjectStore('equipos', { keyPath: 'id' });
+        console.log("Base de datos y almacén 'equipos' creados correctamente");
+    }
 }
 
 openRequest.onerror = function () {

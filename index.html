@@ -36,20 +36,23 @@
             <button class="btn-secondary">Sincronizar con MongoDB Atlas</button>
         </div>
         <div class="flex-horizontal main-top">
-            <form class="flex-horizontal">
+            <form class="flex-horizontal" id="form-equipo">
                 <label for="equipo-nombre">Nombre: </label>
-                <input class="equipo-nombre" type="text" id="equipo-nombre" placeholder="Nombre de tu Equipo">
-                <button style="background-color: #10b981;">
+                <input class="equipo-nombre" type="text" id="equipo-nombre" placeholder="Nombre de tu Equipo" required>
+                <button type="button" id="btn-guardar-equipo" onclick="agregar_equipo()" style="background-color: #10b981;">
                     <i class="fa-solid fa-floppy-disk"></i>
                 </button>
+                <button type="button" id="btn-eliminar-equipo" onclick="eliminar_equipo()" style="background-color: #ef4444;">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
             </form>
-            <button id="btn-nuevo-jugador" style="background-color: #10b981;">
+            <button id="btn-nuevo-jugador" style="background-color: #10b981; display: none;">
                 <i class="fa-solid fa-circle-plus mr"></i> Jugador
             </button>
         </div>
 
         <!-- Main Table -->
-        <div class="table-container">
+        <div class="table-container" id="tabla-jugadores-container" style="display: none;">
             <table class="table-jugadores" border=0>
                 <tr class="table-header">
                     <th>No. Control</th>
