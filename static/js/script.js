@@ -10,8 +10,9 @@ function agregar_jugador() {
         // 2. Obtenemos el almacén de objetos para operar con él
         let jugadores = transaction.objectStore("jugadores");
 
-        if (sessionStorage.id_equipo) {
-            id_equipo = sessionStorage.id_equipo;
+        let id_equipo = "";
+        if (localStorage.getItem('id_equipo')) {
+            id_equipo = localStorage.getItem('id_equipo');
         }
 
         // 3. Creamos el objeto jugador
@@ -81,8 +82,9 @@ function eliminar_jugador(id_a_borrar) {
 }
 
 function eliminar_equipo() {
-    if (sessionStorage.id_equipo) {
-        id_a_borrar = sessionStorage.id_equipo;
+    let id_a_borrar = "";
+    if (localStorage.getItem('id_equipo')) {
+        id_a_borrar = localStorage.getItem('id_equipo');
     }
 
     if (!window.confirm("¿Está seguro de eliminar el Equipo con todos sus Jugadores? Esta acción es irreversible.")) {
@@ -120,7 +122,7 @@ function eliminar_equipo() {
         let request2 = equipos.clear();
 
         request2.onsuccess = function () {
-            sessionStorage.removeItem('id_equipo');
+            localStorage.removeItem('id_equipo');
             window.location.reload();
             console.log("Equipos Eliminados Correctamente");
         };
@@ -274,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (query.result && query.result.length > 0) {
                 // Ya existe un equipo
                 inputEquipoNombre.value = query.result[0].nombre;
+                localStorage.setItem('id_equipo', query.result[0].id); // Sincronizar con localStorage en la nueva pestaña
                 window.revelarSeccionJugadores();
             }
         };
@@ -295,11 +298,11 @@ function agregar_equipo() {
         let equipos = transaction.objectStore("equipos");
 
         let id_equipo = "";
-        if (sessionStorage.id_equipo) {
-            id_equipo = sessionStorage.id_equipo;
+        if (localStorage.getItem('id_equipo')) {
+            id_equipo = localStorage.getItem('id_equipo');
         } else {
             id_equipo = Date.now().toString();
-            sessionStorage.setItem('id_equipo', id_equipo);
+            localStorage.setItem('id_equipo', id_equipo);
         }
 
         let request = equipos.put({ id: id_equipo, nombre: nombreEquipo });
