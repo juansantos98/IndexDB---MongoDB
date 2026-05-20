@@ -33,16 +33,27 @@
         <!-- Main Top -->
         <div class="flex-horizontal main-top">
             <h2>Registro de Equipos</h2>
-            <button class="btn-secondary">Sincronizar con MongoDB Atlas</button>
+            <button class="btn-secondary" onclick="sincronizar_atlas()">Sincronizar con MongoDB Atlas</button>
         </div>
         <div class="flex-horizontal main-top">
             <form class="flex-horizontal" id="form-equipo">
+                <label for="equipo-grupo">Grupo: </label>
+                <select id="equipo-grupo" style="margin-right: 10px; padding: 5px;">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
                 <label for="equipo-nombre">Nombre: </label>
                 <input class="equipo-nombre" type="text" id="equipo-nombre" placeholder="Nombre de tu Equipo" required>
-                <button type="button" id="btn-guardar-equipo" onclick="agregar_equipo()" style="background-color: #10b981;">
+                <button type="button" id="btn-guardar-equipo" onclick="agregar_equipo()"
+                    style="background-color: #10b981;">
                     <i class="fa-solid fa-floppy-disk"></i>
                 </button>
-                <button type="button" id="btn-eliminar-equipo" onclick="eliminar_equipo()" style="background-color: #ef4444;">
+                <button type="button" id="btn-eliminar-equipo" onclick="eliminar_equipo()"
+                    style="background-color: #ef4444;">
                     <i class="fa-solid fa-trash"></i>
                 </button>
             </form>
@@ -85,10 +96,10 @@
                 </div>
                 <div class="form-group">
                     <label for="jugador-posicion">Posición</label>
-                    <select name="cars" id="jugador-posicion">
+                    <select id="jugador-posicion">
+                        <option value="Portero">Portero</option>
                         <option value="Defensa">Defensa</option>
-                        <option value="Central">Central</option>
-                        <option value="Medio">Medio</option>
+                        <option value="Mediocampista">Mediocampista</option>
                         <option value="Delantero">Delantero</option>
                     </select>
                 </div>

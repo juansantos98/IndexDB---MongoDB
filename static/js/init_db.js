@@ -1,4 +1,4 @@
-const openRequest = indexedDB.open("torneo_manager", 1);
+const openRequest = indexedDB.open("torneo_futbol", 2);
 
 // Se ejecuta si la base de datos NO existe o se cambia la versión
 openRequest.onupgradeneeded = function () {

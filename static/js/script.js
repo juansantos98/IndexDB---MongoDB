@@ -1,5 +1,5 @@
 function agregar_jugador() {
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let db = openRequest.result;
@@ -52,7 +52,7 @@ function eliminar_jugador(id_a_borrar) {
         return;
     }
 
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let db = openRequest.result;
@@ -91,7 +91,7 @@ function eliminar_equipo() {
         return;
     }
 
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let db = openRequest.result;
@@ -138,7 +138,7 @@ function eliminar_equipo() {
 }
 
 function listar_jugadores() {
-    const openRequest = indexedDB.open("torneo_manager", 1);
+    const openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let resultado = document.getElementById("jugadores");
@@ -174,7 +174,7 @@ function editar_jugador(id_a_editar) {
     console.log(id_a_editar);
     const modal = document.getElementById("modal-nuevo-jugador");
 
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let db = openRequest.result;
@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // Verificar al cargar la página si ya existe un equipo guardado
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
     openRequest.onsuccess = function () {
         let db = openRequest.result;
         let transaction = db.transaction("equipos", "readonly");
@@ -276,6 +276,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (query.result && query.result.length > 0) {
                 // Ya existe un equipo
                 inputEquipoNombre.value = query.result[0].nombre;
+                if (query.result[0].grupo) {
+                    document.getElementById("equipo-grupo").value = query.result[0].grupo;
+                }
                 localStorage.setItem('id_equipo', query.result[0].id); // Sincronizar con localStorage en la nueva pestaña
                 window.revelarSeccionJugadores();
             }
@@ -289,7 +292,7 @@ function agregar_equipo() {
 
     if (nombreEquipo === "") return;
 
-    let openRequest = indexedDB.open("torneo_manager", 1);
+    let openRequest = indexedDB.open("torneo_futbol", 2);
 
     openRequest.onsuccess = function () {
         let db = openRequest.result;
@@ -305,7 +308,9 @@ function agregar_equipo() {
             localStorage.setItem('id_equipo', id_equipo);
         }
 
-        let request = equipos.put({ id: id_equipo, nombre: nombreEquipo });
+        let grupoEquipo = document.getElementById("equipo-grupo").value;
+
+        let request = equipos.put({ id: id_equipo, nombre: nombreEquipo, grupo: grupoEquipo });
 
         request.onsuccess = function () {
             console.log("Equipo registrado exitosamente: " + nombreEquipo);
@@ -317,4 +322,48 @@ function agregar_equipo() {
             alert(request.error);
         }
     };
+}
+
+async function sincronizar_atlas() {
+    let openRequest = indexedDB.open("torneo_futbol", 2);
+
+    openRequest.onsuccess = function () {
+        let db = openRequest.result;
+
+        let txEquipos = db.transaction("equipos", "readonly").objectStore("equipos").getAll();
+        let txJugadores = db.transaction("jugadores", "readonly").objectStore("jugadores").getAll();
+
+        txEquipos.onsuccess = function () {
+            txJugadores.onsuccess = async function () {
+                const equipos = txEquipos.result;
+                const jugadores = txJugadores.result;
+
+                if (equipos.length === 0 && jugadores.length === 0) {
+                    alert("No hay datos para sincronizar.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/sync', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ equipos, jugadores })
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        alert("Error de validación: " + result.error);
+                    } else {
+                        alert("¡Sincronización exitosa con MongoDB Atlas!");
+                    }
+                } catch (error) {
+                    console.error("Error sincronizando:", error);
+                    alert("No se pudo conectar con el servidor backend.");
+                }
+            }
+        }
+    }
 }
