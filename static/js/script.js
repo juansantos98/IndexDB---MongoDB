@@ -344,7 +344,7 @@ async function sincronizar_atlas() {
                 }
 
                 try {
-                    const response = await fetch('http://localhost:3000/api/sync', {
+                    const response = await fetch('http://18.118.171.146/api/sync', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
