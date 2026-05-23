@@ -6,6 +6,6 @@ const jugadorSchema = new mongoose.Schema({
     posicion: { type: String, required: true },
     equipo: { type: String, required: true }, // Nombre del equipo en texto
     numero: { type: Number, required: true }
-}, { collection: 'jugador' }); // Asegurar que la colección se llame 'jugador' en singular
+}, { collection: 'jugadors' }); // Asegurar que la colección se llame 'jugadors'
 
 module.exports = mongoose.model('Jugador', jugadorSchema);
