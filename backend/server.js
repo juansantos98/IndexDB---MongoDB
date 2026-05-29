@@ -67,6 +67,15 @@ app.post('/api/sync', async (req, res) => {
             const eqFromFrontend = equipos.find(e => e.id === jug.equipo);
             const teamName = eqFromFrontend ? eqFromFrontend.nombre : "Sin equipo";
 
+            // Verificar si en MongoDB ya existe este jugador registrado en OTRO equipo
+            const jugadorExistente = await Jugador.findOne({ numero_control: jug.id });
+            if (jugadorExistente && jugadorExistente.equipo !== teamName) {
+                return res.status(400).json({ 
+                    error: `El Número de Control ${jug.id} ya está registrado en MongoDB con el equipo "${jugadorExistente.equipo}". No se puede sobreescribir.` 
+                });
+            }
+
+            // Si es del mismo equipo (o es nuevo), procedemos a actualizar/crear (upsert)
             await Jugador.findOneAndUpdate(
                 { numero_control: jug.id },
                 {

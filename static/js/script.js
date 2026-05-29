@@ -1,3 +1,26 @@
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let iconClass = 'fa-check-circle';
+    if (type === 'error') iconClass = 'fa-circle-exclamation';
+    if (type === 'info') iconClass = 'fa-circle-info';
+
+    toast.innerHTML = `
+        <i class="fa-solid ${iconClass} toast-icon"></i>
+        <p class="toast-message">${message}</p>
+    `;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.add('hiding');
+        toast.addEventListener('animationend', () => toast.remove());
+    }, 3000);
+}
+
 function agregar_jugador() {
     let openRequest = indexedDB.open("torneo_futbol", 2);
 
@@ -25,17 +48,30 @@ function agregar_jugador() {
             created: new Date()
         };
 
-        // 4. Usamos put en lugar de add para que actualice si ya existe, o lo cree si es nuevo
-        let request = jugadores.put(jugador);
+        // 4. Determinar si es crear o actualizar
+        let isEditing = document.getElementById("jugador-control").disabled;
+        let request;
+        
+        if (isEditing) {
+            request = jugadores.put(jugador);
+        } else {
+            request = jugadores.add(jugador);
+        }
 
         request.onsuccess = function () {
-            console.log("Jugador guardado correctamente. No. Control: " + request.result);
+            showToast(isEditing ? "Jugador actualizado con éxito" : "Jugador guardado con éxito", "success");
             listar_jugadores(); // Refrescar tabla
             document.getElementById("modal-nuevo-jugador").classList.remove("active"); // Cerrar modal
         };
 
-        request.onerror = function () {
-            console.log("Ocurrió un error al agregar el jugador: " + request.error);
+        request.onerror = function (e) {
+            if (e.target.error.name === 'ConstraintError') {
+                showToast("Este Número de Control ya está registrado", "error");
+                e.preventDefault(); // Evita que se cierre el modal bruscamente
+                e.stopPropagation();
+            } else {
+                showToast("Ocurrió un error: " + e.target.error.message, "error");
+            }
         };
     };
 
@@ -67,7 +103,7 @@ function eliminar_jugador(id_a_borrar) {
         let request = jugadores.delete(id_a_borrar);
 
         request.onsuccess = function () {
-            console.log("Petición de eliminación completada para el No. Control: " + id_a_borrar);
+            showToast("Jugador eliminado", "success");
             listar_jugadores(); // Actualizar la tabla después de eliminar
         };
 
@@ -123,8 +159,8 @@ function eliminar_equipo() {
 
         request2.onsuccess = function () {
             localStorage.removeItem('id_equipo');
-            window.location.reload();
-            console.log("Equipos Eliminados Correctamente");
+            showToast("Equipo y jugadores eliminados", "info");
+            setTimeout(() => window.location.reload(), 1000);
         };
 
         request2.onerror = function () {
@@ -149,9 +185,11 @@ function listar_jugadores() {
         let jugadores = transaction.objectStore("jugadores");
         let query = jugadores.openCursor();
 
+        let hasPlayers = false;
         query.onsuccess = ev => {
             let cursor = ev.target.result;
             if (cursor) {
+                hasPlayers = true;
                 resultado.innerHTML += "<tr>"
                     + "<td>" + cursor.value.id + "</td>"
                     + "<td>" + cursor.value.nombre_completo + "</td>"
@@ -165,6 +203,16 @@ function listar_jugadores() {
                     + "</td>"
                     + "</tr>";
                 cursor.continue();
+            } else {
+                const emptyState = document.getElementById("empty-state");
+                const table = document.getElementById("tabla-jugadores");
+                if (hasPlayers) {
+                    emptyState.style.display = "none";
+                    table.style.display = "table";
+                } else {
+                    emptyState.style.display = "flex";
+                    table.style.display = "none";
+                }
             }
         };
     }
@@ -261,7 +309,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.revelarSeccionJugadores = () => {
         btnAbrir.style.display = "inline-flex"; // Es btn-nuevo-jugador
+        
+        const header = document.getElementById("active-team-header");
+        if (header) {
+            header.style.display = "flex";
+            const nombre = document.getElementById("equipo-nombre").value;
+            const grupo = document.getElementById("equipo-grupo").value;
+            document.getElementById("active-team-name").innerText = nombre || "Sin Nombre";
+            document.getElementById("active-team-group").innerText = grupo || "N/A";
+        }
+        
         tablaJugadoresContainer.style.display = "block";
+        listar_jugadores();
     };
 
     // Verificar al cargar la página si ya existe un equipo guardado
@@ -313,8 +372,7 @@ function agregar_equipo() {
         let request = equipos.put({ id: id_equipo, nombre: nombreEquipo, grupo: grupoEquipo });
 
         request.onsuccess = function () {
-            console.log("Equipo registrado exitosamente: " + nombreEquipo);
-            window.location.reload();
+            showToast("Equipo registrado exitosamente", "success");
             window.revelarSeccionJugadores();
         };
 
@@ -339,9 +397,11 @@ async function sincronizar_atlas() {
                 const jugadores = txJugadores.result;
 
                 if (equipos.length === 0 && jugadores.length === 0) {
-                    alert("No hay datos para sincronizar.");
+                    showToast("No hay datos para sincronizar.", "info");
                     return;
                 }
+                
+                showToast("Sincronizando con Atlas...", "info");
 
                 try {
                     const response = await fetch('http://18.118.171.146/api/sync', {
@@ -355,13 +415,13 @@ async function sincronizar_atlas() {
                     const result = await response.json();
 
                     if (!response.ok) {
-                        alert("Error de validación: " + result.error);
+                        showToast("Error de validación: " + result.error, "error");
                     } else {
-                        alert("¡Sincronización exitosa con MongoDB Atlas!");
+                        showToast("¡Sincronización exitosa con MongoDB Atlas!", "success");
                     }
                 } catch (error) {
                     console.error("Error sincronizando:", error);
-                    alert("No se pudo conectar con el servidor backend.");
+                    showToast("No se pudo conectar con el servidor backend.", "error");
                 }
             }
         }
