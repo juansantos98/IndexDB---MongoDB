@@ -48,3 +48,25 @@ form input[type="submit"]:hover {
 .btn-secondary:hover {
     background-color: var(--bg-color);
 }
+
+@media (max-width: 768px) {
+    .main-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #form-equipo {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .equipo-nombre {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .btn-secondary {
+        width: 100%;
+    }
+}

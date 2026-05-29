@@ -7,6 +7,6 @@ const equipoSchema = new mongoose.Schema({
     goles_contra: { type: Number, default: 0 },
     goles_favor: { type: Number, default: 0 },
     puntos: { type: Number, default: 0 }
-}, { collection: 'equipos' }); // Asegurar que la colección se llame 'equipos'
+}, { collection: 'equipos' });
 
 module.exports = mongoose.model('Equipo', equipoSchema);
